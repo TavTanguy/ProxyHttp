@@ -2,7 +2,8 @@ const http = require("http"),
   https = require("https"),
   config = require("./config.json"),
   hosts = require("./hosts"),
-  { readFileSync } = require("fs");
+  { readFileSync, createReadStream } = require("fs"),
+  { join } = require("path");
 
 const optionsHttps = {
   key: readFileSync(config.listen.https.key, "utf8"),
@@ -29,7 +30,7 @@ serverHttps.listen(config.listen.https.port, config.listen.ip, () => {
 
 function onRequest(req, res) {
   req.headers.encrypted = req.connection.encrypted == undefined ? false : true;
-  const host = hosts.getHost(req.host);
+  const host = hosts.getHost(req.headers.host);
   if (host == null) {
     return noHost(req, res);
   }
@@ -47,4 +48,7 @@ function onRequest(req, res) {
   req.pipe(reqProxy);
 }
 
-function noHost(req, res) {}
+function noHost(req, res) {
+  res.writeHead(config.ifNoHost.code, config.ifNoHost.headers);
+  createReadStream(config.ifNoHost.file).pipe(res);
+}

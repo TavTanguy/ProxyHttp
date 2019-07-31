@@ -11,9 +11,18 @@
       "cert": "./keys/certificate.pem"
     }
   },
+  "ifNoHost": {
+    "code": 404,
+    "headers": {
+      "Content-Type": "text/html",
+      "Content-Length": 326,
+      "Server": "ProxyTav"
+    },
+    "file": "./noHost.html"
+  },
   "hosts": [
     {
-      "defaultHost": true,
+      "defaultHost": false,
       "on": ["localhost", "127.0.0.1"],
       "redirect": {
         "name": "Server local",
