@@ -1,0 +1,12 @@
+{
+  "name": "proxyhttp",
+  "version": "1.0.0",
+  "description": "A proxy Http",
+  "main": "listen.js",
+  "scripts": {
+    "start": "node listen.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Taverna Tanguy",
+  "license": "ISC"
+}
