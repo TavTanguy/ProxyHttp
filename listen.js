@@ -2,8 +2,8 @@ const http = require("http"),
   https = require("https"),
   config = require("./config.json"),
   hosts = require("./hosts"),
-  { readFileSync, createReadStream } = require("fs"),
-  { join } = require("path");
+  { info, error } = require("./utils/log"),
+  { readFileSync, createReadStream } = require("fs");
 
 const optionsHttps = {
   key: readFileSync(config.listen.https.key, "utf8"),
@@ -16,12 +16,12 @@ serverHttp.on("request", onRequest);
 serverHttps.on("request", onRequest);
 
 serverHttp.listen(config.listen.http.port, config.listen.ip, () => {
-  console.log(
+  info(
     `${config.name} listen on ${config.listen.ip}:${config.listen.http.port}`
   );
 });
 serverHttps.listen(config.listen.https.port, config.listen.ip, () => {
-  console.log(
+  info(
     `${config.name} secure listen on ${config.listen.ip}:${
       config.listen.https.port
     }`
@@ -46,9 +46,14 @@ function onRequest(req, res) {
     resProxy.pipe(res);
   });
   req.pipe(reqProxy);
+  info(`{${req.connection.remoteAddress}} rediect to ${host.name}`);
 }
 
 function noHost(req, res) {
   res.writeHead(config.ifNoHost.code, config.ifNoHost.headers);
   createReadStream(config.ifNoHost.file).pipe(res);
+  info(`{${req.connection.remoteAddress}} no host`);
 }
+
+process.title = config.name;
+process.setUncaughtExceptionCaptureCallback(error);
