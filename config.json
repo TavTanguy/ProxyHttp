@@ -10,5 +10,16 @@
       "key": "./keys/privatekey.pem",
       "cert": "./keys/certificate.pem"
     }
-  }
+  },
+  "hosts": [
+    {
+      "defaultHost": true,
+      "on": ["localhost", "127.0.0.1"],
+      "redirect": {
+        "name": "Server local",
+        "ip": "127.0.80.1",
+        "port": 8080
+      }
+    }
+  ]
 }
