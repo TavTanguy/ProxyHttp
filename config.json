@@ -11,24 +11,6 @@
       "cert": "./keys/certificate.pem"
     }
   },
-  "ifNoHost": {
-    "code": 404,
-    "headers": {
-      "Content-Type": "text/html",
-      "Content-Length": 326,
-      "Server": "ProxyTav"
-    },
-    "file": "./noHost.html"
-  },
-  "onError": {
-    "code": 500,
-    "headers": {
-      "Content-Type": "text/html",
-      "Content-Length": 326,
-      "Server": "ProxyTav"
-    },
-    "file": "./error.html"
-  },
   "hosts": [
     {
       "defaultHost": false,
@@ -36,12 +18,46 @@
       "redirect": {
         "name": "Server local",
         "ip": "127.0.80.1",
-        "port": 8080
+        "port": 8080,
+        "ifNotRepond": {
+          "code": 524,
+          "headers": {
+            "Content-Length": 326
+          },
+          "file": "./notRespondLocalhost.html"
+        }
       }
     }
   ],
   "log": {
     "error": "./logs/error.log",
     "info": "./logs/info.log"
+  },
+  "responds": {
+    "headers": {
+      "Content-Type": "text/html",
+      "Server": "ProxyTav"
+    },
+    "ifNoHost": {
+      "code": 404,
+      "headers": {
+        "Content-Length": 326
+      },
+      "file": "./noHost.html"
+    },
+    "ifNotRespond": {
+      "code": 524,
+      "headers": {
+        "Content-Length": 326
+      },
+      "file": "./notRespond.html"
+    },
+    "onError": {
+      "code": 500,
+      "headers": {
+        "Content-Length": 326
+      },
+      "file": "./error.html"
+    }
   }
 }

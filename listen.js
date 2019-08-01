@@ -49,7 +49,7 @@ function onRequest(req, res) {
       resProxy.pipe(res);
     });
     reqProxy.on("error", err => {
-      error(err);
+      notRespond(req, res, host);
     });
     req.on("end", () => {
       info(`{${req.connection.remoteAddress}} rediect to ${host.name}`);
@@ -57,16 +57,44 @@ function onRequest(req, res) {
     req.pipe(reqProxy);
   } catch (err) {
     error(err);
-    res.writeHead(config.onError.code, config.onError.headers);
-    createReadStream(config.onError.file).pipe(res);
-    info(`{${req.connection.remoteAddress}} respond with error`);
+    res.writeHead(
+      config.responds.onError.code,
+      Object.assign(
+        config.responds.ifNotRespond.headers,
+        config.responds.headers
+      )
+    );
+    createReadStream(config.responds.onError.file).pipe(res);
+    error(`{${req.connection.remoteAddress}} respond with error`);
   }
 }
 
 function noHost(req, res) {
-  res.writeHead(config.ifNoHost.code, config.ifNoHost.headers);
-  createReadStream(config.ifNoHost.file).pipe(res);
-  info(`{${req.connection.remoteAddress}} no host`);
+  res.writeHead(
+    config.responds.ifNoHost.code,
+    Object.assign(config.responds.ifNotRespond.headers, config.responds.headers)
+  );
+  createReadStream(config.responds.ifNoHost.file).pipe(res);
+  error(`{${req.connection.remoteAddress}} no host`);
+}
+function notRespond(req, res, host) {
+  if (host.ifNotRepond) {
+    res.writeHead(
+      host.ifNotRepond.code,
+      Object.assign(host.ifNotRepond.headers, config.responds.headers)
+    );
+    createReadStream(host.ifNotRepond.file).pipe(res);
+  } else {
+    res.writeHead(
+      config.responds.ifNotRespond.code,
+      Object.assign(
+        config.responds.ifNotRespond.headers,
+        config.responds.headers
+      )
+    );
+    createReadStream(config.responds.ifNotRespond.file).pipe(res);
+  }
+  error(`{${req.connection.remoteAddress}} host ${host.name} not respond`);
 }
 
 process.title = config.name;
