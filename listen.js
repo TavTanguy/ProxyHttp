@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const http = require("http"),
   https = require("https"),
   config = require("./config.json"),
