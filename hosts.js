@@ -1,4 +1,5 @@
-const config = require("./config.json");
+const config = require("./config.json"),
+  { get } = require("http");
 
 let hosts = {},
   defaultHost = null;

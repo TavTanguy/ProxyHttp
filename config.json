@@ -20,6 +20,15 @@
     },
     "file": "./noHost.html"
   },
+  "onError": {
+    "code": 500,
+    "headers": {
+      "Content-Type": "text/html",
+      "Content-Length": 326,
+      "Server": "ProxyTav"
+    },
+    "file": "./error.html"
+  },
   "hosts": [
     {
       "defaultHost": false,

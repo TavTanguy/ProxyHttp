@@ -29,24 +29,37 @@ serverHttps.listen(config.listen.https.port, config.listen.ip, () => {
 });
 
 function onRequest(req, res) {
-  req.headers.encrypted = req.connection.encrypted == undefined ? false : true;
-  const host = hosts.getHost(req.headers.host);
-  if (host == null) {
-    return noHost(req, res);
+  try {
+    req.headers.encrypted =
+      req.connection.encrypted == undefined ? false : true;
+    const host = hosts.getHost(req.headers.host);
+    if (host == null) {
+      return noHost(req, res);
+    }
+    const options = {
+      hostname: host.ip,
+      port: host.port,
+      path: req.url,
+      method: req.method,
+      headers: req.headers
+    };
+    const reqProxy = http.request(options, resProxy => {
+      res.writeHead(resProxy.statusCode, resProxy.headers);
+      resProxy.pipe(res);
+    });
+    reqProxy.on("error", err => {
+      error(err);
+    });
+    req.on("end", () => {
+      info(`{${req.connection.remoteAddress}} rediect to ${host.name}`);
+    });
+    req.pipe(reqProxy);
+  } catch (err) {
+    error(err);
+    res.writeHead(config.onError.code, config.onError.headers);
+    createReadStream(config.onError.file).pipe(res);
+    info(`{${req.connection.remoteAddress}} respond with error`);
   }
-  const options = {
-    hostname: host.ip,
-    port: host.port,
-    path: req.url,
-    method: req.method,
-    headers: req.headers
-  };
-  const reqProxy = http.request(options, resProxy => {
-    res.writeHead(resProxy.statusCode, resProxy.headers);
-    resProxy.pipe(res);
-  });
-  req.pipe(reqProxy);
-  info(`{${req.connection.remoteAddress}} rediect to ${host.name}`);
 }
 
 function noHost(req, res) {
