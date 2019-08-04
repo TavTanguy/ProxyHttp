@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const http = require("http"),
   https = require("https"),
-  config = require("./config.json"),
+  config = require(process.env.CONFIG || "./config.json"),
   hosts = require("./hosts"),
   { info, error } = require("./utils/log"),
   { readFileSync, createReadStream } = require("fs");

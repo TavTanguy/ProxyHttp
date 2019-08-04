@@ -1,4 +1,4 @@
-const config = require("./config.json"),
+const config = require(process.env.CONFIG || "./config.json"),
   { info, error } = require("./utils/log"),
   { get } = require("http");
 

@@ -1,5 +1,5 @@
 const { createWriteStream } = require("fs"),
-  config = require("../config.json"),
+  config = require("../" + (process.env.CONFIG || "./config.json")),
   date = require("./date"),
   { format } = require("util");
 
